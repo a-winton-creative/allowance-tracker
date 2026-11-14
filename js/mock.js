@@ -6,7 +6,7 @@
   var qs = new URLSearchParams(location.search);
   var today = '2026-11-13';
   var kids = [
-    { kidId: 'nora', name: 'Nora', side: 'Left', theme: qs.get('theme1') || 'Dragons', payDay: 1,
+    { kidId: 'nora', name: 'Nora', side: 'Left', theme: qs.get('theme1') || 'Fire Dragon', payDay: 1,
       perPay: { Main: 20, Charity: 5, Savings: 5 },
       chores: ['Make bed every morning', 'Feed the cat', 'Unload the dishwasher', 'Homework before screens'] },
     { kidId: 'graham', name: 'Graham', side: 'Right', theme: qs.get('theme2') || 'Block World', payDay: 15,

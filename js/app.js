@@ -14,10 +14,13 @@
 
   var CACHE_KEY = 'allowance.state.v1';
   var ACCOUNTS = ['Main', 'Charity', 'Savings'];
-  var THEMES = ['Dragons', 'Block World', 'Bird Field Guide', 'Kitty Café', 'Moon & Crows', 'Quest'];
+  var THEMES = ['Fire Dragon', 'Storm Dragon', 'Sea Dragon', 'Block World', 'Bird Field Guide', 'Kitty Café', 'Moon & Crows', 'Quest'];
+  var THEME_ALIASES = { 'Dragons': 'Fire Dragon' }; // the original dragon theme's old name
   // little colour chips for the theme picker (from the approved designs)
   var THEME_CHIPS = {
-    'Dragons': ['#1a0508', '#ff6a2b', '#fff1e6'],
+    'Fire Dragon': ['#1a0508', '#ff6a2b', '#fff1e6'],
+    'Storm Dragon': ['#121119', '#a174ff', '#f1ecff'],
+    'Sea Dragon': ['#05191f', '#2fd1b0', '#e8fbf8'],
     'Block World': ['#123d4a', '#9be15d', '#ffffff'],
     'Bird Field Guide': ['#f4ecd8', '#3f5f31', '#2b3a22'],
     'Kitty Café': ['#ffd6e8', '#7a4cc2', '#3e1f66'],
@@ -60,7 +63,8 @@
   function shortDate(s) { return ymdToDate(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function monthLabel(s) { return ymdToDate(s).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
   function ordinal(n) { var s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
-  function slug(theme) { return (window.THEME_ART[theme] || window.THEME_ART['Dragons']).slug; }
+  function themeName(t) { t = THEME_ALIASES[t] || t; return window.THEME_ART[t] ? t : THEMES[0]; }
+  function themeArt(t) { return window.THEME_ART[themeName(t)]; }
   function kidById(id) { return S.data.kids.filter(function (k) { return k.kidId === id; })[0]; }
   function halfEl(kidId) { return app.querySelector('.half[data-kid="' + kidId + '"]'); }
   function today() { return (S.data && S.data.today) || new Date().toISOString().slice(0, 10); }
@@ -175,7 +179,7 @@
   }
 
   function halfHtml(k) {
-    var art = window.THEME_ART[k.theme] || window.THEME_ART['Dragons'];
+    var art = themeArt(k.theme);
     var b = k.balances || { Main: 0, Charity: 0, Savings: 0 };
     var neg = b.Main < 0;
     var chores = (k.chores || []).length
@@ -478,7 +482,7 @@
 
   function openKid(kidId) {
     var k = kidById(kidId);
-    var chosen = k.theme;
+    var chosen = themeName(k.theme);
     var html = sheetHead(k, 'Edit Kid') +
       '<div class="section"><span class="field-lbl" style="margin:0">Photo</span>' +
         '<p class="hint">Photo upload (JPG or GIF) comes in the next build step. For now the circle shows ' + esc(k.name) + '’s first initial.</p></div>' +

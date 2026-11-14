@@ -1,6 +1,6 @@
 /* Generated from the approved theme designs (step 3). One class per theme. */
 
-.theme-dragons {
+.theme-fire-dragon {
   --text: #fff1e6;
   --soft: #ffd9bf;
   --accent: #ffb347;
@@ -21,7 +21,7 @@
   --ns: 1;
 }
 
-.theme-dragons.half, .theme-dragons .sheet { background-color:#1a0508;background-image:radial-gradient(circle at 50% 0,transparent 13px,rgba(255,106,43,.11) 14px,transparent 16px);background-size:30px 18px; }
+.theme-fire-dragon.half, .theme-fire-dragon .sheet { background-color:#1a0508;background-image:radial-gradient(circle at 50% 0,transparent 13px,rgba(255,106,43,.11) 14px,transparent 16px);background-size:30px 18px; }
 
 @keyframes ember{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px);opacity:0}}
 .ember{animation:ember 7s linear infinite}
@@ -179,4 +179,66 @@
 .shimmer{animation:shimmer 3.2s ease-in-out infinite}
 @keyframes volley{0%{transform:translate(-120px,700px);opacity:0}10%{opacity:1}60%{transform:translate(860px,560px);opacity:1}61%,100%{opacity:0;transform:translate(860px,560px)}}
 .volley{animation:volley 9s linear infinite}
+
+
+.theme-storm-dragon {
+  --text: #f1ecff;
+  --soft: #d6cbf2;
+  --accent: #bf95ff;
+  --title: #f6f1ff;
+  --tshadow: 0 3px 0 #2a1450, 0 0 30px rgba(140,80,255,.45);
+  --avbg: #241a38;
+  --glass: rgba(160,120,255,.10);
+  --gborder: 1px solid rgba(190,160,255,.35);
+  --gshadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 30px rgba(0,0,0,.5);
+  --r: 20px;
+  --pr: 18px;
+  --primary: #a174ff;
+  --ptext: #120b20;
+  --pshadow: 0 8px 24px rgba(140,80,255,.5), inset 0 2px 0 rgba(255,255,255,.4);
+  --neg: #ffb1a3;
+  --fd: 'Cinzel',serif;
+  --fn: 'Cinzel',serif;
+  --ns: 1;
+}
+
+.theme-storm-dragon.half, .theme-storm-dragon .sheet { background-color:#121119;background-image:radial-gradient(circle at 50% 0,transparent 13px,rgba(170,120,255,.11) 14px,transparent 16px);background-size:30px 18px; }
+
+@keyframes ember{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px);opacity:0}}
+.ember{animation:ember 7s linear infinite}
+@keyframes smoke{0%{transform:translateY(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(-900px);opacity:0}}
+.smoke{animation:smoke 15s linear infinite}
+@keyframes eyeglow{0%,100%{opacity:.7}50%{opacity:1}}
+.eyeglow{animation:eyeglow 2.4s ease-in-out infinite}
+
+
+.theme-sea-dragon {
+  --text: #e8fbf8;
+  --soft: #b9e6df;
+  --accent: #4fe3c4;
+  --title: #effffc;
+  --tshadow: 0 3px 0 #052a2e, 0 0 30px rgba(40,200,190,.4);
+  --avbg: #0c3036;
+  --glass: rgba(80,220,200,.09);
+  --gborder: 1px solid rgba(120,240,220,.32);
+  --gshadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 30px rgba(0,0,0,.5);
+  --r: 20px;
+  --pr: 18px;
+  --primary: #2fd1b0;
+  --ptext: #03211d;
+  --pshadow: 0 8px 24px rgba(40,200,180,.45), inset 0 2px 0 rgba(255,255,255,.4);
+  --neg: #ffb1a3;
+  --fd: 'Cinzel',serif;
+  --fn: 'Cinzel',serif;
+  --ns: 1;
+}
+
+.theme-sea-dragon.half, .theme-sea-dragon .sheet { background-color:#05191f;background-image:radial-gradient(circle at 50% 0,transparent 13px,rgba(60,220,190,.10) 14px,transparent 16px);background-size:30px 18px; }
+
+@keyframes ember{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px);opacity:0}}
+.ember{animation:ember 7s linear infinite}
+@keyframes smoke{0%{transform:translateY(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(-900px);opacity:0}}
+.smoke{animation:smoke 15s linear infinite}
+@keyframes eyeglow{0%,100%{opacity:.7}50%{opacity:1}}
+.eyeglow{animation:eyeglow 2.4s ease-in-out infinite}
 
