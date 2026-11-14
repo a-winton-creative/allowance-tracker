@@ -12,8 +12,10 @@
 (function () {
   'use strict';
 
-  var CACHE_KEY = 'allowance.state.v1';
-  var CELEBRATED_KEY = 'allowance.celebrated.v1';  // kidId -> last payday this device celebrated
+  // test mode (?mock=1) keeps its own saved data, so fake numbers never mix with real ones
+  var KEY_SUFFIX = Api.isMock ? '.mock' : '';
+  var CACHE_KEY = 'allowance.state.v1' + KEY_SUFFIX;
+  var CELEBRATED_KEY = 'allowance.celebrated.v1' + KEY_SUFFIX;  // kidId -> last payday this device celebrated
   var ACCOUNTS = ['Main', 'Charity', 'Savings'];
   var THEMES = ['Fire Dragon', 'Storm Dragon', 'Sea Dragon', 'Block World', 'Bird Field Guide', 'Kitty Café', 'Moon & Crows', 'Quest'];
   var THEME_ALIASES = { 'Dragons': 'Fire Dragon' }; // the original dragon theme's old name

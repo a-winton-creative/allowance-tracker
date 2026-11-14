@@ -11,7 +11,7 @@
  */
 (function () {
   var MOCK = /[?&]mock=1\b/.test(location.search);
-  var TOKEN_KEY = 'allowance.unlock';
+  var TOKEN_KEY = 'allowance.unlock' + (MOCK ? '.mock' : '');
   var TIMEOUT_MS = 20000;
   var mockReady = !MOCK ? Promise.resolve() : new Promise(function (resolve) {
     var s = document.createElement('script');
