@@ -13,6 +13,7 @@
   'use strict';
 
   var CACHE_KEY = 'allowance.state.v1';
+  var CELEBRATED_KEY = 'allowance.celebrated.v1';  // kidId -> last payday this device celebrated
   var ACCOUNTS = ['Main', 'Charity', 'Savings'];
   var THEMES = ['Fire Dragon', 'Storm Dragon', 'Sea Dragon', 'Block World', 'Bird Field Guide', 'Kitty Café', 'Moon & Crows', 'Quest'];
   var THEME_ALIASES = { 'Dragons': 'Fire Dragon' }; // the original dragon theme's old name
@@ -144,6 +145,7 @@
       setData(d);
       render();
       renderOfflineNote();
+      checkCelebrations();
     }).catch(function (err) {
       if (S.data) { S.offline = true; renderOfflineNote(); }
       else renderFatal(err);
@@ -271,7 +273,7 @@
     if (half) half.querySelector('.sheet-host').innerHTML = '';
     delete S.sheets[kidId];
     var btn = half && half.querySelector('[data-act]');
-    if (S.redrawLater) render();
+    if (S.redrawLater) { render(); checkCelebrations(); }
     else if (btn) btn.focus({ preventScroll: true });
   }
   document.addEventListener('keydown', function (e) {
@@ -713,6 +715,91 @@
         };
       };
     });
+  }
+
+
+  // ===================================================================== payday celebration (step 7)
+  // Each device celebrates each payday once. If several paydays were missed,
+  // one celebration covers them all. A brand-new device only celebrates a
+  // payday from the last couple of days (not old ones).
+
+  function addDays(ymd, n) {
+    var p = ymd.split('-');
+    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2] + n));
+    return d.toISOString().slice(0, 10);
+  }
+  function readCelebrated() {
+    try { return JSON.parse(localStorage.getItem(CELEBRATED_KEY) || '{}') || {}; } catch (e) { return {}; }
+  }
+  function writeCelebrated(rec) {
+    try { localStorage.setItem(CELEBRATED_KEY, JSON.stringify(rec)); } catch (e) { /* ignore */ }
+  }
+  var celebrating = {};
+
+  function checkCelebrations() {
+    if (!S.data || !window.Celebrate) return;
+    var rec = readCelebrated();
+    S.data.kids.forEach(function (k) {
+      var last = k.lastPayday;
+      if (!last || celebrating[k.kidId] || S.sheets[k.kidId]) return;
+      var seen = rec[k.kidId];
+      var due = seen ? last > seen : last >= addDays(today(), -2);
+      if (!due) {
+        if (!seen) { rec[k.kidId] = last; writeCelebrated(rec); }
+        return;
+      }
+      var since = seen || addDays(last, -1);
+      rec[k.kidId] = last; writeCelebrated(rec);   // mark first, so it can't play twice
+      celebrating[k.kidId] = true;
+      Api.getHistory(k.kidId).then(function (h) {
+        var got = { Main: 0, Charity: 0, Savings: 0 };
+        h.entries.forEach(function (t) {
+          if (t.type === 'Allowance' && t.date > since && t.date <= last && got[t.account] !== undefined) {
+            got[t.account] = Math.round((got[t.account] + t.amount) * 100) / 100;
+          }
+        });
+        if (!got.Main && !got.Charity && !got.Savings) return;
+        return celebrate(k, got);
+      }).catch(function () { /* no celebration this time */ })
+        .then(function () { delete celebrating[k.kidId]; });
+    });
+  }
+
+  function celebrate(k, got) {
+    var half = halfEl(k.kidId);
+    if (!half) return;
+    var parts = [];
+    if (got.Main) parts.push('+' + money(got.Main) + ' spending');
+    if (got.Charity) parts.push('+' + money(got.Charity) + ' Charity');
+    if (got.Savings) parts.push('+' + money(got.Savings) + ' Savings');
+
+    // on a phone the kid's half may be scrolled away: bring it into view first
+    var r = half.getBoundingClientRect();
+    var offscreen = r.top < -40 || r.top > window.innerHeight * 0.5;
+    if (offscreen) half.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    return new Promise(function (res) { setTimeout(res, offscreen ? 500 : 150); }).then(function () {
+      countUp(half, k.balances.Main - got.Main, k.balances.Main);
+      // banner sits just below the balance card, so the count-up stays visible; sparks burst from the card
+      var card = half.querySelector('.bal-card');
+      var hr = half.getBoundingClientRect(), cr = card.getBoundingClientRect();
+      return Celebrate.play(half, themeArt(k.theme).slug, { title: 'Payday!', line: parts.join(' · ') },
+        { bannerTop: cr.bottom - hr.top + 14, burstY: cr.top - hr.top + cr.height / 2 });
+    });
+  }
+
+  /** The big balance counts up from the old amount to the new one. */
+  function countUp(half, from, to) {
+    var el = half.querySelector('.bal-num');
+    if (!el) return;
+    var start = performance.now(), dur = 1400;
+    function step(now) {
+      var t = Math.min(1, (now - start) / dur);
+      var e = 1 - Math.pow(1 - t, 3);
+      el.textContent = money(from + (to - from) * e);
+      if (t < 1) requestAnimationFrame(step); else { el.textContent = money(to); fitText(el); }
+    }
+    requestAnimationFrame(step);
   }
 
   // ===================================================================== wiring

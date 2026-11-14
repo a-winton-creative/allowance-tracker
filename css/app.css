@@ -342,3 +342,23 @@ select.field { appearance: none; -webkit-appearance: none; }
 .crop::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 400px rgba(0, 0, 0, .55); border: 3px solid var(--accent); pointer-events: none; }
 .zoom-row { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: var(--soft); }
 .zoom-row input { flex: 1; accent-color: var(--accent); height: 32px; }
+
+/* ------------------------------------------------------------- payday celebration (step 7) */
+
+.celebrate {
+  position: absolute; inset: 0; z-index: 20;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: clamp(110px, 18%, 210px) 20px 0;
+  transition: opacity .45s;
+}
+.celebrate canvas { position: absolute; left: 0; top: 0; pointer-events: none; }
+.celebrate.is-leaving { opacity: 0; }
+.celebrate-banner {
+  position: relative; text-align: center; padding: 18px 30px 20px; max-width: 92%;
+  animation: pop-in .55s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+.celebrate-title { font-family: var(--fd); font-weight: 700; font-size: 64px; line-height: 1.1; color: var(--title); text-shadow: var(--tshadow); }
+.celebrate-line { margin-top: 6px; font-size: 18px; font-weight: 800; color: var(--text); }
+@media (max-width: 899px) { .celebrate-title { font-size: 46px; } .celebrate-line { font-size: 16px; } }
+@keyframes pop-in { 0% { transform: scale(.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .celebrate-banner { animation: none; } }

@@ -28,6 +28,11 @@
   add('2026-11-10', 'graham', 'Main', 'Purchase', -64.5, 'Trading cards');
   add('2026-11-01', 'nora', 'Main', 'Allowance', 20, 'Payday');
   add('2026-11-08', 'nora', 'Charity', 'Purchase', -5, 'Animal shelter donation');
+  if (qs.get('payday')) {
+    add(today, 'graham', 'Main', 'Allowance', 10, 'Payday');
+    add(today, 'graham', 'Charity', 'Allowance', 2.5, 'Payday');
+    add(today, 'graham', 'Savings', 'Allowance', 2.5, 'Payday');
+  }
   if (qs.get('long')) add('2026-11-12', 'nora', 'Main', 'Deposit', 1187.25, 'Big test deposit');
 
   function bal(kid) {
