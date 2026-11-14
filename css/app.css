@@ -311,3 +311,34 @@ select.field { appearance: none; -webkit-appearance: none; }
 @media (prefers-reduced-motion: reduce) {
   .anim, .shimmer, .pin-dots.shake { animation: none !important; }
 }
+
+/* ------------------------------------------------------------- photos (step 6) */
+
+.avatar, .mini-avatar { position: relative; overflow: hidden; }
+.avatar img, .mini-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avatar img:not([src]), .mini-avatar img:not([src]) { display: none; }
+
+/* custom background: photo + a tint so the text stays readable */
+.half { --photo-tint: linear-gradient(180deg, rgba(0, 0, 0, .40), rgba(0, 0, 0, .58)); }
+.theme-bird-field-guide, .theme-kitty-cafe { --photo-tint: linear-gradient(180deg, rgba(255, 255, 255, .50), rgba(255, 255, 255, .66)); }
+.bg-photo { background-size: cover; background-position: center; opacity: 0; transition: opacity .4s; }
+.bg-photo.is-loaded { opacity: 1; }
+.bg-tint { position: absolute; inset: 0; background: var(--photo-tint); pointer-events: none; }
+
+.photo-row { display: flex; align-items: center; gap: 18px; }
+.photo-prev { --av: 84px; }
+.photo-btns { display: flex; flex-direction: column; gap: 8px; }
+.photo-btns.row { flex-direction: row; flex-wrap: wrap; }
+.small-btn { min-height: 44px; padding: 0 16px; border-radius: 12px; border: none; background: var(--primary); color: var(--ptext); font-size: 16px; font-weight: 900; }
+.small-btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--field-border); }
+.small-btn:disabled { opacity: .6; }
+.bg-prev { height: 120px; border-radius: 14px; background-size: cover; background-position: center; border: 1px solid var(--field-border); display: flex; align-items: center; justify-content: center; }
+.bg-prev.is-theme { background: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 12px, transparent 12px 24px); }
+.bg-prev span { font-weight: 800; color: var(--soft); }
+
+.crop { position: relative; width: 260px; height: 260px; margin: 4px auto 0; overflow: hidden; border-radius: 16px; background: #000; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+.crop.dragging { cursor: grabbing; }
+.crop img { position: absolute; top: 0; left: 0; max-width: none; transform-origin: 0 0; pointer-events: none; -webkit-user-drag: none; }
+.crop::after { content: ''; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 400px rgba(0, 0, 0, .55); border: 3px solid var(--accent); pointer-events: none; }
+.zoom-row { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 900; color: var(--soft); }
+.zoom-row input { flex: 1; accent-color: var(--accent); height: 32px; }

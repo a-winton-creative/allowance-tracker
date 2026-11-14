@@ -49,7 +49,7 @@
       kids: kids.map(function (k) {
         var last = '';
         txns.forEach(function (t) { if (t.kidId === k.kidId && t.type === 'Allowance' && t.date > last) last = t.date; });
-        return Object.assign({}, k, { avatarFileId: '', backgroundFileId: '', balances: bal(k.kidId), nextPayday: next(k.payDay), lastPayday: last });
+        return Object.assign({ avatarFileId: '', backgroundFileId: '' }, k, { balances: bal(k.kidId), nextPayday: next(k.payDay), lastPayday: last });
       })
     };
   }
@@ -70,9 +70,13 @@
   }
   function fail(msg, code) { return Promise.reject(Object.assign(new Error(msg), { code: code || null })); }
   var tokens = {};
+  var images = {}, imgN = 0;
 
   window.MockApi = {
-    get: function (p) { return delay(p.action === 'history' ? history(p.kid) : state()); },
+    get: function (p) {
+      if (p.action === 'image') return images[p.id] ? delay({ id: p.id, mime: images[p.id].mime, data: images[p.id].data }) : fail('Image not found.');
+      return delay(p.action === 'history' ? history(p.kid) : state());
+    },
     post: function (b) {
       if (b.action === 'unlock') {
         if (b.pin !== '123456') return delay(null).then(function () { return fail('Wrong PIN. 4 tries left.'); });
@@ -93,6 +97,14 @@
           });
           return delay(state());
         case 'saveKid': k.name = b.name; k.theme = b.theme; return delay(state());
+        case 'uploadImage':
+          if (!/^image\/(jpeg|gif)$/.test(b.mime)) return fail('Please use a JPG or GIF.');
+          var id = 'img' + (++imgN); images[id] = { mime: b.mime, data: b.data };
+          k[b.kind === 'avatar' ? 'avatarFileId' : 'backgroundFileId'] = id;
+          return delay(state());
+        case 'removeImage':
+          k[b.kind === 'avatar' ? 'avatarFileId' : 'backgroundFileId'] = '';
+          return delay(state());
         case 'editTxn':
           txns.forEach(function (t) { if (t.txnId === b.txnId) { t.amount = +b.amount; t.note = b.note; t.date = b.date; t.account = b.account; t.edited = true; } });
           return delay(history(txns.filter(function (t) { return t.txnId === b.txnId; })[0].kidId));

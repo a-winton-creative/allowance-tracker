@@ -174,6 +174,10 @@
     if (Object.keys(S.sheets).some(function (k) { return S.sheets[k]; })) { S.redrawLater = true; return; }
     S.redrawLater = false;
     app.innerHTML = orderedKids().map(halfHtml).join('');
+    Images.hydrate(app);
+    var used = [];
+    S.data.kids.forEach(function (k) { if (k.avatarFileId) used.push(k.avatarFileId); if (k.backgroundFileId) used.push(k.backgroundFileId); });
+    Images.prune(used);
     fitAll();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
   }
@@ -186,13 +190,16 @@
       ? '<ul class="chores">' + k.chores.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>'
       : '<p class="chores-empty">No chores listed yet.</p>';
     var initial = esc((k.name || '?').charAt(0).toUpperCase());
+    var back = k.backgroundFileId
+      ? '<div class="art-back bg-photo" aria-hidden="true" data-bg-id="' + esc(k.backgroundFileId) + '"></div><div class="bg-tint" aria-hidden="true"></div>'
+      : '<div class="art-back" aria-hidden="true"><svg viewBox="0 0 720 900" preserveAspectRatio="xMaxYMin slice">' + art.back + '</svg></div>';
 
     return '' +
     '<section class="half theme-' + art.slug + '" data-kid="' + esc(k.kidId) + '" aria-label="' + esc(k.name) + '">' +
-      '<div class="art-back" aria-hidden="true"><svg viewBox="0 0 720 900" preserveAspectRatio="xMaxYMin slice">' + art.back + '</svg></div>' +
+      back +
       '<div class="content">' +
         '<header class="kid-head">' +
-          '<div class="avatar" role="img" aria-label="' + esc(k.name) + '">' + initial + '</div>' +
+          '<div class="avatar" role="img" aria-label="' + esc(k.name) + '">' + initial + avatarImg(k) + '</div>' +
           '<h1 class="kid-name" data-fit>' + esc(k.name) + '</h1>' +
         '</header>' +
         '<div class="glass bal-card">' +
@@ -229,6 +236,12 @@
     '</section>';
   }
 
+  function avatarImg(k) {
+    if (!k.avatarFileId) return '';
+    var src = Images.peek(k.avatarFileId);
+    return '<img alt="" data-img-id="' + esc(k.avatarFileId) + '"' + (src ? ' src="' + src + '"' : '') + '>';
+  }
+
   function miniCard(name, ic, amt) {
     return '<div class="glass mini-card"><div class="lbl">' + icon(ic, 20) + ' ' + name + '</div>' +
       '<div class="num mini-amt' + (amt < 0 ? ' is-neg' : '') + '" data-fit>' + money(amt) + '</div></div>';
@@ -243,6 +256,7 @@
     var host = half.querySelector('.sheet-host');
     host.innerHTML = '<div class="sheet-backdrop"><div class="sheet" role="dialog" aria-modal="true"><div class="sheet-inner">' + html + '</div></div></div>';
     var sheet = host.querySelector('.sheet');
+    Images.hydrate(sheet);
     host.querySelector('.sheet-backdrop').addEventListener('click', function (e) {
       if (e.target === e.currentTarget) closeSheet(kidId);
     });
@@ -267,7 +281,7 @@
   function sheetHead(k, title, closeLabel) {
     return '<div class="sheet-head"><button type="button" class="link-btn" data-close>' + (closeLabel || 'Cancel') + '</button>' +
       '<h2>' + esc(title) + '</h2>' +
-      '<div class="mini-avatar" role="img" aria-label="' + esc(k.name) + '">' + esc(k.name.charAt(0).toUpperCase()) + '</div></div>';
+      '<div class="mini-avatar" role="img" aria-label="' + esc(k.name) + '">' + esc(k.name.charAt(0).toUpperCase()) + avatarImg(k) + '</div></div>';
   }
 
   // ---- PIN
@@ -336,11 +350,13 @@
   }
 
   /** Send a change. Redraws with fresh numbers and says "Saved". */
-  function save(kidId, sheet, action, payload, onDone) {
-    var btn = sheet.querySelector('[data-submit]');
-    var err = sheet.querySelector('.form-error');
+  function save(kidId, sheet, action, payload, onDone, button) {
+    var btn = button || sheet.querySelector('[data-submit]');
+    var errs = sheet.querySelectorAll('.form-error');
+    var err = errs.length ? errs[errs.length - 1] : null;
+    if (button && sheet.querySelector('[data-imgerr]')) err = sheet.querySelector('[data-imgerr]');
     var label = btn ? btn.innerHTML : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    if (btn) { btn.disabled = true; btn.textContent = action === 'uploadImage' ? 'Uploading…' : 'Saving…'; }
     if (err) err.textContent = '';
     Api.write(action, payload).then(function (result) {
       if (onDone) return onDone(result);
@@ -478,14 +494,38 @@
     });
   }
 
-  // ---- Edit Kid
+  // ---- Edit Kid (name, theme, photo, background)
 
   function openKid(kidId) {
     var k = kidById(kidId);
     var chosen = themeName(k.theme);
     var html = sheetHead(k, 'Edit Kid') +
-      '<div class="section"><span class="field-lbl" style="margin:0">Photo</span>' +
-        '<p class="hint">Photo upload (JPG or GIF) comes in the next build step. For now the circle shows ' + esc(k.name) + '’s first initial.</p></div>' +
+      // photo
+      '<div class="section" data-photo>' +
+        '<span class="field-lbl" style="margin:0">Photo</span>' +
+        '<div class="photo-row">' +
+          '<div class="avatar photo-prev" aria-hidden="true">' + esc(k.name.charAt(0).toUpperCase()) + avatarImg(k) + '</div>' +
+          '<div class="photo-btns">' +
+            '<button type="button" class="small-btn" data-pick="avatar">Choose photo</button>' +
+            (k.avatarFileId ? '<button type="button" class="small-btn ghost" data-remove="avatar">Remove photo</button>' : '') +
+          '</div>' +
+        '</div>' +
+        '<p class="hint">JPG, PNG, iPhone photos or GIF. GIFs up to 5 MB keep their animation.</p>' +
+      '</div>' +
+      // background
+      '<div class="section" data-bgsec>' +
+        '<span class="field-lbl" style="margin:0">Background</span>' +
+        '<div class="bg-prev' + (k.backgroundFileId ? '' : ' is-theme') + '"' + (k.backgroundFileId ? ' data-bg-id="' + esc(k.backgroundFileId) + '"' : '') + '>' +
+          (k.backgroundFileId ? '' : '<span>Theme artwork</span>') + '</div>' +
+        '<div class="photo-btns row">' +
+          '<button type="button" class="small-btn" data-pick="background">Choose background</button>' +
+          (k.backgroundFileId ? '<button type="button" class="small-btn ghost" data-remove="background">Use theme artwork</button>' : '') +
+        '</div>' +
+        '<p class="hint">Replaces the theme’s background art. The theme’s colors, cards and front artwork stay.</p>' +
+      '</div>' +
+      '<input type="file" accept="image/*" class="sr-only" data-file tabindex="-1" aria-hidden="true">' +
+      '<p class="form-error" data-imgerr role="alert"></p>' +
+      // name + theme
       '<div><label class="field-lbl" for="k-name">First name</label><input id="k-name" class="field" maxlength="30" value="' + esc(k.name) + '" autocomplete="off"></div>' +
       '<div><span class="field-lbl">Theme</span><div class="theme-grid">' +
         THEMES.map(function (t) {
@@ -494,9 +534,74 @@
             'style="background:' + c[0] + ';color:' + c[2] + '"><i style="background:' + c[1] + '"></i>' + esc(t) + '</button>';
         }).join('') + '</div></div>' +
       '<p class="form-error" role="alert"></p>' +
-      '<button type="button" class="btn-primary" data-submit>Save</button>';
+      '<button type="button" class="btn-primary" data-submit>Save name &amp; theme</button>';
 
     openSheet(kidId, html, function (sheet) {
+      var fileInput = sheet.querySelector('[data-file]');
+      var imgErr = sheet.querySelector('[data-imgerr]');
+      var pickingKind = null;
+
+      // after any photo change: keep the fresh numbers and redraw this sheet
+      function afterImage(kind, previewUrl) {
+        return function (state) {
+          setData(state);
+          S.redrawLater = true;   // redraw the main screen when this pop-up closes
+          var fresh = kidById(kidId);
+          var id = kind === 'avatar' ? fresh.avatarFileId : fresh.backgroundFileId;
+          if (id && previewUrl) Images.remember(id, previewUrl);
+          showStatus(kind === 'avatar' ? (id ? 'Photo saved' : 'Photo removed') : (id ? 'Background saved' : 'Theme artwork is back'), true);
+          if (sheet.isConnected) { closeSheet(kidId); openKid(kidId); }
+          else render();
+        };
+      }
+
+      sheet.querySelectorAll('[data-pick]').forEach(function (b) {
+        b.onclick = function () { pickingKind = b.getAttribute('data-pick'); imgErr.textContent = ''; fileInput.value = ''; fileInput.click(); };
+      });
+      sheet.querySelectorAll('[data-remove]').forEach(function (b) {
+        b.onclick = function () {
+          var kind = b.getAttribute('data-remove');
+          save(kidId, sheet, 'removeImage', { kid: kidId, kind: kind }, afterImage(kind, null), b);
+        };
+      });
+
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        var kind = pickingKind;
+        var btn = sheet.querySelector('[data-pick="' + kind + '"]');
+        function upload(prep) {
+          save(kidId, sheet, 'uploadImage', { kid: kidId, kind: kind, mime: prep.mime, data: prep.data }, afterImage(kind, prep.previewUrl), btn);
+        }
+        function fail(e) { imgErr.textContent = e.message; }
+
+        if (kind === 'background') {
+          if (btn) { btn.disabled = true; btn.textContent = 'Preparing…'; }
+          Images.prepareBackground(file).then(upload, function (e) { if (btn) { btn.disabled = false; btn.textContent = 'Choose background'; } fail(e); });
+          return;
+        }
+        if (Images.isGif(file)) { Images.prepareGif(file).then(upload, fail); return; }
+
+        // still photo: let the parent drag and zoom it inside the circle first
+        Images.decode(file).then(function (img) {
+          var sec = sheet.querySelector('[data-photo]');
+          sec.innerHTML = '<span class="field-lbl" style="margin:0">Drag to move · slide to zoom</span>' +
+            '<div class="crop" data-crop></div>' +
+            '<label class="zoom-row"><span aria-hidden="true">−</span><input type="range" min="1" max="3" step="0.01" value="1" aria-label="Zoom" data-zoom><span aria-hidden="true">+</span></label>' +
+            '<div class="photo-btns row"><button type="button" class="small-btn" data-usecrop>Use this photo</button>' +
+            '<button type="button" class="small-btn ghost" data-cancelcrop>Cancel</button></div>';
+          var cropper = Images.makeCropper(sec.querySelector('[data-crop]'), img, sec.querySelector('[data-zoom]'));
+          sec.querySelector('[data-cancelcrop]').onclick = function () { closeSheet(kidId); openKid(kidId); };
+          var use = sec.querySelector('[data-usecrop]');
+          use.onclick = function () {
+            use.disabled = true; use.textContent = 'Preparing…';
+            cropper.done().then(function (prep) {
+              save(kidId, sheet, 'uploadImage', { kid: kidId, kind: 'avatar', mime: prep.mime, data: prep.data }, afterImage('avatar', prep.previewUrl), use);
+            }, function (e) { use.disabled = false; use.textContent = 'Use this photo'; fail(e); });
+          };
+        }, fail);
+      });
+
       sheet.querySelectorAll('[data-theme]').forEach(function (b) {
         b.onclick = function () {
           chosen = b.getAttribute('data-theme');
@@ -505,7 +610,8 @@
       });
       sheet.querySelector('[data-submit]').onclick = function () {
         var name = sheet.querySelector('#k-name').value.trim();
-        if (!name) { sheet.querySelector('.form-error').textContent = 'Please enter a first name.'; return; }
+        var errs = sheet.querySelectorAll('.form-error');
+        if (!name) { errs[errs.length - 1].textContent = 'Please enter a first name.'; return; }
         save(kidId, sheet, 'saveKid', { kid: kidId, name: name, theme: chosen });
       };
     });

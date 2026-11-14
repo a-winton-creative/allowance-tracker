@@ -80,6 +80,7 @@
     isMock: MOCK,
     getState: function () { return get({ action: 'state' }); },
     getHistory: function (kid) { return get({ action: 'history', kid: kid }); },
+    getImage: function (id) { return get({ action: 'image', id: id }); },
     isUnlocked: function () { return !!currentToken(); },
     unlock: function (pin) {
       return post({ action: 'unlock', pin: pin }).then(function (d) {
