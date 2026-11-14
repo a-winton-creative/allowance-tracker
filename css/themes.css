@@ -1,0 +1,182 @@
+/* Generated from the approved theme designs (step 3). One class per theme. */
+
+.theme-dragons {
+  --text: #fff1e6;
+  --soft: #ffd9bf;
+  --accent: #ffb347;
+  --title: #ffe8d0;
+  --tshadow: 0 3px 0 #7a1e14, 0 0 30px rgba(255,90,30,.45);
+  --avbg: #3d0a10;
+  --glass: rgba(255,120,60,.10);
+  --gborder: 1px solid rgba(255,170,110,.35);
+  --gshadow: inset 0 1px 0 rgba(255,255,255,.22), 0 10px 30px rgba(0,0,0,.45);
+  --r: 20px;
+  --pr: 18px;
+  --primary: #ff6a2b;
+  --ptext: #1a0508;
+  --pshadow: 0 8px 24px rgba(255,90,30,.5), inset 0 2px 0 rgba(255,255,255,.4);
+  --neg: #ffb1a3;
+  --fd: 'Cinzel',serif;
+  --fn: 'Cinzel',serif;
+  --ns: 1;
+}
+
+.theme-dragons.half, .theme-dragons .sheet { background-color:#1a0508;background-image:radial-gradient(circle at 50% 0,transparent 13px,rgba(255,106,43,.11) 14px,transparent 16px);background-size:30px 18px; }
+
+@keyframes ember{0%{transform:translateY(0);opacity:0}15%{opacity:.9}100%{transform:translateY(-520px);opacity:0}}
+.ember{animation:ember 7s linear infinite}
+@keyframes smoke{0%{transform:translateY(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(-900px);opacity:0}}
+.smoke{animation:smoke 15s linear infinite}
+@keyframes eyeglow{0%,100%{opacity:.7}50%{opacity:1}}
+.eyeglow{animation:eyeglow 2.4s ease-in-out infinite}
+
+
+.theme-block-world {
+  --text: #effff8;
+  --soft: #d2f7e6;
+  --accent: #9be15d;
+  --title: #ffffff;
+  --tshadow: 4px 4px 0 #0a2630;
+  --avbg: #1d5a54;
+  --glass: rgba(190,255,230,.10);
+  --gborder: 2px solid rgba(190,255,220,.32);
+  --gshadow: inset 0 2px 0 rgba(255,255,255,.22), 0 10px 30px rgba(0,0,0,.30);
+  --r: 12px;
+  --pr: 10px;
+  --primary: #9be15d;
+  --ptext: #0e2a14;
+  --pshadow: 0 6px 0 #4d8f2a, 0 12px 24px rgba(0,0,0,.30);
+  --neg: #ffb1a3;
+  --fd: 'Pixelify Sans',sans-serif;
+  --fn: 'Press Start 2P',monospace;
+  --ns: 0.75;
+}
+
+.theme-block-world.half, .theme-block-world .sheet { background-color:#123d4a;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:40px 40px; }
+
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.bob{animation:bob 3.6s steps(6) infinite}
+
+
+.theme-bird-field-guide {
+  --text: #2b3a22;
+  --soft: #4b5a3f;
+  --accent: #8a3f1d;
+  --title: #2b3a22;
+  --tshadow: none;
+  --avbg: #e8dcc2;
+  --glass: rgba(255,253,246,.62);
+  --gborder: 1px solid rgba(74,107,58,.30);
+  --gshadow: 0 6px 20px rgba(60,70,40,.14), inset 0 1px 0 #ffffff;
+  --r: 16px;
+  --pr: 16px;
+  --primary: #3f5f31;
+  --ptext: #fbf6ea;
+  --pshadow: 0 6px 16px rgba(63,95,49,.35);
+  --neg: #a8432f;
+  --fd: 'Fraunces',serif;
+  --fn: 'Fraunces',serif;
+  --ns: 1;
+}
+
+.theme-bird-field-guide.half, .theme-bird-field-guide .sheet { background-color:#f4ecd8;background-image:linear-gradient(rgba(120,100,60,.07) 1px,transparent 1px);background-size:100% 28px; }
+
+@keyframes hop{0%,82%,100%{transform:translateY(0)}88%{transform:translateY(-8px)}94%{transform:translateY(0)}}
+.hop{animation:hop 4.5s ease-in-out infinite}
+@keyframes glide{0%{transform:translate(-120px,330px) rotate(-6deg)}50%{transform:translate(380px,290px) rotate(2deg)}100%{transform:translate(860px,340px) rotate(-4deg)}}
+.glide{animation:glide 14s linear infinite}
+@keyframes mist{0%,100%{transform:translateX(-30px)}50%{transform:translateX(30px)}}
+.mist{animation:mist 12s ease-in-out infinite}
+
+
+.theme-kitty-cafe {
+  --text: #3e1f66;
+  --soft: #5e3c86;
+  --accent: #a0337a;
+  --title: #5b2d9e;
+  --tshadow: 0 3px 0 #ffffff;
+  --avbg: #fff4f8;
+  --glass: rgba(255,255,255,.55);
+  --gborder: 2px solid rgba(255,255,255,.9);
+  --gshadow: 0 8px 24px rgba(160,60,120,.16), inset 0 1px 0 #ffffff;
+  --r: 28px;
+  --pr: 999px;
+  --primary: #7a4cc2;
+  --ptext: #ffffff;
+  --pshadow: 0 6px 0 #5a3399, 0 10px 20px rgba(122,76,194,.3);
+  --neg: #b4235a;
+  --fd: 'Fredoka',sans-serif;
+  --fn: 'Fredoka',sans-serif;
+  --ns: 1;
+}
+
+.theme-kitty-cafe.half, .theme-kitty-cafe .sheet { background-color:#ffd6e8;background-image:radial-gradient(circle,rgba(255,255,255,.6) 4px,transparent 5px);background-size:34px 34px; }
+
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+.blink2{transform-box:fill-box;transform-origin:center;animation:blink 5.3s infinite}
+@keyframes float{0%{transform:translateY(0);opacity:0}20%{opacity:.9}100%{transform:translateY(-200px);opacity:0}}
+.float{transform-box:fill-box;animation:float 5s ease-in infinite}
+
+
+.theme-moon-crows {
+  --text: #e6e9f7;
+  --soft: #c3c8e6;
+  --accent: #b9c2ff;
+  --title: #f2f0e6;
+  --tshadow: 0 0 24px rgba(232,230,216,.45);
+  --avbg: #1a1d38;
+  --glass: rgba(185,194,255,.08);
+  --gborder: 1px solid rgba(185,194,255,.28);
+  --gshadow: inset 0 1px 0 rgba(255,255,255,.15), 0 10px 30px rgba(0,0,0,.5);
+  --r: 20px;
+  --pr: 20px;
+  --primary: #e8e6d8;
+  --ptext: #0b0d1c;
+  --pshadow: 0 0 28px rgba(232,230,216,.35);
+  --neg: #ffb1a3;
+  --fd: 'Cormorant Garamond',serif;
+  --fn: 'Cormorant Garamond',serif;
+  --ns: 1;
+}
+
+.theme-moon-crows.half, .theme-moon-crows .sheet { background-color:#0b0d1c; }
+
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+.twinkle{animation:twinkle 3s ease-in-out infinite}
+@keyframes flyby{0%{transform:translate(-80px,420px)}100%{transform:translate(820px,300px)}}
+.flyby{animation:flyby 16s linear infinite}
+@keyframes flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(-.6)}}
+.flap{transform-box:fill-box;transform-origin:center bottom;animation:flap .6s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(60px)}}
+.drift{animation:drift 18s ease-in-out infinite}
+
+
+.theme-quest {
+  --text: #f4e7c4;
+  --soft: #e2d3ad;
+  --accent: #e3bf62;
+  --title: #f4e7c4;
+  --tshadow: 0 3px 0 #0b1230;
+  --avbg: #2b2350;
+  --glass: rgba(140,160,255,.10);
+  --gborder: 2px solid rgba(227,191,98,.45);
+  --gshadow: inset 0 1px 0 rgba(255,255,255,.18), 0 10px 30px rgba(0,0,0,.40);
+  --r: 14px;
+  --pr: 12px;
+  --primary: #d4ab4f;
+  --ptext: #1a1430;
+  --pshadow: 0 6px 0 #8a6a22, 0 12px 24px rgba(0,0,0,.35);
+  --neg: #ffb1a3;
+  --fd: 'MedievalSharp',serif;
+  --fn: 'Spectral SC',serif;
+  --ns: 1;
+}
+
+.theme-quest.half, .theme-quest .sheet { background-color:#17224d;background-image:linear-gradient(45deg,rgba(227,191,98,.05) 25%,transparent 25%,transparent 75%,rgba(227,191,98,.05) 75%),linear-gradient(-45deg,rgba(227,191,98,.05) 25%,transparent 25%,transparent 75%,rgba(227,191,98,.05) 75%);background-size:48px 48px; }
+
+@keyframes shimmer{0%,100%{filter:brightness(1)}50%{filter:brightness(1.25)}}
+.shimmer{animation:shimmer 3.2s ease-in-out infinite}
+@keyframes volley{0%{transform:translate(-120px,700px);opacity:0}10%{opacity:1}60%{transform:translate(860px,560px);opacity:1}61%,100%{opacity:0;transform:translate(860px,560px)}}
+.volley{animation:volley 9s linear infinite}
+
